@@ -1,0 +1,12 @@
+{
+    "name": "symbols",
+    "tags": ["multi", "global"],
+    "shortcuts": {
+        "box":               [{"type": "Text", "args": ["{}"]}, {"type": "Key", "args": ["left:1"]}],
+        "circle":            [{"type": "Text", "args": ["()"]}, {"type": "Key", "args": ["left:1"]}],
+        "diamond":           [{"type": "Text", "args": ["<>"]}, {"type": "Key", "args": ["left:1"]}],
+        "nest quote":        [{"type": "Text", "args": ["\"\""]}, {"type": "Key", "args": ["left:1"]}],
+        "nest smote":        [{"type": "Text", "args": ["''"]}, {"type": "Key", "args": ["left:1"]}],
+        "square":            [{"type": "Text", "args": ["[]"]}, {"type": "Key", "args": ["left:1"]}]
+    }
+}

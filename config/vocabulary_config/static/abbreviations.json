@@ -1,6 +1,6 @@
 {
     "name": "abbreviations",
-    "tags": ["verbal_emacs.insertions", "multiedit", "global"],
+    "tags": ["multi.abbreviate"],
     "vocabulary": {
         "abbreviate administrator": "admin",
         "abbreviate administrators": "admins",
@@ -62,6 +62,7 @@
         "abbreviate regular (expression|expressions)": "regex",
         "abbreviate request": "req",
         "abbreviate revision": "rev",
+        "abbreviate response": "res",
         "abbreviate ruby": "rb",
         "abbreviate session aidee": "sid",
         "abbreviate source": "src",
