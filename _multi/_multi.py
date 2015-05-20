@@ -81,6 +81,9 @@ command_table = aenea.configuration.make_grammar_commands('multi', {
 
     'bump [<n>]':      Key('cs-right:%(n)d, del'),
     'whack [<n>]':     Key('cs-left:%(n)d, del'),
+
+    'yank':            Key('c-c'),
+    'keep':            Key('c-x')
 }, config_key='commands')
 
 
@@ -134,12 +137,17 @@ class MultiRule(CompoundRule):
     This rule processes the recognition of a multi_repetition element. It
     executes each child of the recognition in order.
     """
-    spec = '<multi_repetition>'
-    extras = [MultiRepetition()]
+    spec = '<multi_repetition> [parrot [<m>]]'
+    extras = [
+        MultiRepetition(),
+        IntegerRef('m', 1, 100)
+    ]
+    defaults = {'m': 1}
 
-    def process_recognition(self, node):
-        value = node.children[0].children[0].value()
-        value.execute()
+    def _process_recognition(self, node, extras):
+        multi_repetition = extras['multi_repetition']
+        utterance_multiplier = extras['m']
+        (multi_repetition * utterance_multiplier).execute()
 
 
 # Disable the multi grammar in certain contexts. The contexts in which multi is
