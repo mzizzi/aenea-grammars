@@ -55,12 +55,23 @@ command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME, {
     'navi blend [<n>]':    Key('c-rbracket:%(n)d'), # next block
     'navi doc':            Key('c-q'),
 
+    'navi flip':           Key('a-right'),
+    'navi flop':           Key('a-left'),
+    'navi flake':          Key('c-f4'),
+    'navi split':          Key('a-equal'),
+    'navi unsplit':        Key('a-hyphen'),
+    'navi hike':           Key('a-backslash'),
+
     'pogo line':           Key('cs-enter'),
     'pogo name':           Key('s-f6'),
     'pogo error':          Key('f2'),
     'pogo error previous': Key('s-f2'),
 
     'select block': Key('c-lbracket:10, cs-rbracket'),
+
+    # TODO:
+    # sticky selection a-s
+
     }, config_key='commands')
 
 
