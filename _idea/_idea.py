@@ -31,7 +31,9 @@ from aenea import (
     AppContext,
     Repetition,
     RuleRef,
+    Sequence,
 )
+from base.characters import LOWERCASE, UPPERCASE, SYMBOLS_TEXT, DIGITS
 
 import base.rules
 
@@ -112,12 +114,15 @@ terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME,
     'pogo name':           Key('s-f6'),
     'pogo error':          Key('f2'),
     'pogo error previous': Key('s-f2'),
+
+    'auto comp':           Key('a-enter'),
+    'idea rerun':          Key('c-f5'),
 }, config_key='terminal')
 
 
 class EditorRule(MappingRule):
     """
-    Commands that can be repeated.  Limited to in-editor-window commands.
+    Editor window commands.
     """
     mapping = repeatable_command_table
     extras = [
@@ -130,10 +135,10 @@ class EditorRule(MappingRule):
 class RepeatableRule(Repetition):
     def __init__(self):
         """
-        A combination of all the rules in the idea grammar. This includes
-        both text insertion actions and text manipulation actions.  This is
-        the core rule of the idea grammar.  Also allows for these elements
-        to be repeated in sequence.
+        A combination of all repeatable elements in the idea grammar. This
+        includes both text insertion actions, text manipulation, and
+        navigation actions.  This is the workhorse rule of the idea grammar.
+        Allows for these elements to be spoken continuously.
         """
         repeatable_element = Alternative(
             name='repeatable_element',
@@ -162,33 +167,91 @@ class RepeatableRule(Repetition):
         return flattened_values
 
 
-class TerminalRule(MappingRule):
+class EmacsIdeasAceJumpRule(MappingRule):
     """
-    Commands that should end a recognition.
+    EmacsIdeas plugin bindings.  Currently only a few of the acejump hotkeys
+    are implemented.
+
+    "scar alpha" (highlights all 'a' characters for jumping)
+    "sword alpha" (highlights all words beginning with 'a' for jumping)
     """
-    mapping = terminal_command_table
-    extras = []
-    defaults = {}
+    def __init__(self):
+        chars = LOWERCASE.copy()
+        chars.update(UPPERCASE)
+        chars.update(SYMBOLS_TEXT)
+        chars.update(DIGITS)
+
+        single_character_element = RuleRef(
+            rule=MappingRule(mapping=chars, name='emacs_ideas_mapping'),
+            name='char'
+        )
+
+        mapping = {
+            'scar <char>':  Key('a-p') + Text('%(char)s'),
+            'sword <char>': Key('a-k') + Text('%(char)s'),
+        }
+
+        super(EmacsIdeasAceJumpRule, self).__init__(
+            mapping=mapping,
+            extras=[single_character_element],
+            defaults={'char': ''}
+        )
+
+
+class TerminalRule(Alternative):
+    """
+    Commands that should end a recognition for the idea grammar.  These are
+    commands that don't usually require immediate action after speaking them.
+    """
+
+    def __init__(self):
+        terminal_command_element = RuleRef(
+            rule=MappingRule(
+                mapping=terminal_command_table,
+                name='terminal_command_element'
+            )
+        )
+
+        emacs_ideas_element = RuleRef(rule=EmacsIdeasAceJumpRule())
+
+        super(TerminalRule, self).__init__(
+            children=[
+                terminal_command_element,
+                emacs_ideas_element
+            ],
+            name='terminal_rule'
+        )
 
 
 class IdeaRule(CompoundRule):
     """
+    Top level idea grammar rule
+
+    <repeatable_rule> is any character, vocabulary word, or formatted
+    dictation the grammar allows for these items to be spoken continuously.
+    If <repeatable rule> is followed by "parrot <number>" then the entire
+    <repeatable_rule> recognition will be multiplied by <number>.
+
+    <terminal_rule> is the set of rules that should aren't frequently used
+    in series with other commands.  They may follow repeatable rules without
+    pausing.
     """
-    spec = '[<repeatable_rule>] [parrot [<i>]] [<terminal>]'
+    spec = '[<repeatable_rule>] [parrot [<i>]] [<terminal_rule>]'
     extras = [
         RepeatableRule(),
         IntegerRef('i', 1, 99),
-        RuleRef(rule=TerminalRule(), name='terminal')
+        TerminalRule()
     ]
     defaults = {'i': 1}
 
     def _process_recognition(self, node, extras):
-        repeatable = extras['repeatable_rule']
-        utterance_multiplier = extras['i']
-        (repeatable * utterance_multiplier).execute()
+        if 'repeatable_rule' in extras:
+            repeatable = extras['repeatable_rule']
+            utterance_multiplier = extras['i']
+            (repeatable * utterance_multiplier).execute()
 
-        if 'terminal' in extras:
-            extras['terminal'].execute()
+        if 'terminal_rule' in extras:
+            extras['terminal_rule'].execute()
 
 
 context = aenea.wrappers.AeneaContext(
