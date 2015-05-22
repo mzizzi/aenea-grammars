@@ -47,11 +47,11 @@
         "private":           [{"type": "Text", "args": ["____"]}, {"type": "Key", "args": ["left:2"]}],
         "dock string":       [{"type": "Text", "args": ["''''''"]}, {"type": "Key", "args": ["left:3"]}],
         "dub dock string":   [{"type": "Text", "args": ["\"\"\"\"\"\""]}, {"type": "Key", "args": ["left:3"]}],
-        "!bit ore":          " | ",
-        "!bit and":          " & ",
-        "!bit ex or":        " ^ ",
-        "!mod equal":        " %%= ",
-        "!values":           "values",
-        "!assert":           "assert ",
+        "bit ore":          " | ",
+        "bit and":          " & ",
+        "bit ex or":        " ^ ",
+        "mod equal":        " %%= ",
+        "values":           "values",
+        "assert":           "assert "
     }
 }

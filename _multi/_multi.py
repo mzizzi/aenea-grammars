@@ -83,7 +83,9 @@ command_table = aenea.configuration.make_grammar_commands('multi', {
     'whack [<n>]':     Key('cs-left:%(n)d, del'),
 
     'yank':            Key('c-c'),
-    'keep':            Key('c-x')
+    'keep':            Key('c-x'),
+
+    'kink':            Key('c-z'),
 }, config_key='commands')
 
 
