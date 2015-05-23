@@ -104,19 +104,19 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
 
 
 terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME, {
-    'navi flip':           Key('a-right'),
-    'navi flop':           Key('a-left'),
-    'navi flake':          Key('c-f4'),
-    'navi split':          Key('a-equal'),
-    'navi unsplit':        Key('a-hyphen'),
-    'navi hike':           Key('a-backslash'),
+    'navi flip':             Key('a-right'),
+    'navi flop':             Key('a-left'),
+    'navi flake':            Key('c-f4'),
+    'navi split':            Key('a-equal'),
+    'navi unsplit':          Key('a-hyphen'),
+    'navi hike':             Key('a-backslash'),
 
-    'pogo name':           Key('s-f6'),
-    'pogo error':          Key('f2'),
-    'pogo error previous': Key('s-f2'),
+    'refactor name':         Key('s-f6'),
+    'go to error':           Key('f2'),
+    'go to previous error':  Key('s-f2'),
 
-    'auto comp':           Key('a-enter'),
-    'idea rerun':          Key('c-f5'),
+    'auto comp':             Key('a-enter'),
+    'idea rerun':            Key('c-f5'),
 }, config_key='terminal')
 
 
