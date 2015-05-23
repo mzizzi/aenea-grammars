@@ -48,7 +48,7 @@ current line. `Key('up, up, c-y')`
 
 Next up is the `[parrot [<i>]]` portion of the grammar which acts as a
 multiplier for `repeatable_rule'.  Any repetition of command in repeat rule 
-can optionally be "parroted" <i> times.
+can optionally be "parroted" "i" times.
 
 For example: `camel hello world parrot three` sends keystrokes for
 `helloWorldhelloWorldhelloWorld`.
