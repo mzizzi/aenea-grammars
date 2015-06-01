@@ -13,16 +13,18 @@ from aenea import (
     Text
     )
 
-chromium_context = aenea.AeneaContext(
-    ProxyAppContext(cls_name='chromium', cls='chromium'),
-    (AppContext(executable='chrome') | AppContext(executable='chromium'))
-    )
+proxy_context = (ProxyAppContext(executable='chromium-browse') |
+                 ProxyAppContext(cls_name='chromium-browser', cls='chromium-browser'))
+local_context = (AppContext(executable='chrome') |
+                 AppContext(executable='chromium'))
+chromium_context = aenea.AeneaContext(proxy_context, local_context)
 
 chromium_grammar = Grammar('chromium', context=chromium_context)
 
 
 class ChromiumRule(MappingRule):
     mapping = aenea.configuration.make_grammar_commands('chromium', {
+        'address':                           Key('c-l'),
         'close [<n>] ( frame | frames )':    Key('c-w:%(n)d'),
         'open frame':                        Key('c-t'),
         'open window':                       Key('c-n'),
@@ -30,8 +32,6 @@ class ChromiumRule(MappingRule):
         '[ go to ] frame [<n>]':             Key('c-%(n)d'),
         'frame left [<n>]':                  Key('cs-tab:%(n)d'),
         'frame right [<n>]':                 Key('c-tab:%(n)d'),
-        'search [<text>]':                   Key('c-k') + Text('%(text)s'),
-        'find [<text>]':                     Key('c-f') + Text('%(text)s'),
         'history':                           Key('c-h'),
         'reload':                            Key('c-r'),
         'next [<n>]':                        Key('c-g:%(n)d'),
@@ -39,15 +39,24 @@ class ChromiumRule(MappingRule):
         'back [<n>]':                        Key('a-left:%(n)d'),
         'forward [<n>]':                     Key('a-right:%(n)d'),
         })
-
     extras = [IntegerRef('n', 1, 10), Dictation('text')]
-    defaults = {
-        'n': 1,
-        'text': ''
-        }
+    defaults = {'n': 1}
+
+
+class VimiumRule(MappingRule):
+    mapping = aenea.configuration.make_grammar_commands('vimium', {
+        'links': Key('f'),
+        'search': Key('slash'),
+        'search next': Key('n'),
+        'search previous': Key('N'),
+        'bookmarks': Key('o'),
+    })
+    extras = [Dictation('text')]
+    defaults = {'text': ''}
+
 
 chromium_grammar.add_rule(ChromiumRule())
-
+chromium_grammar.add_rule(VimiumRule())
 chromium_grammar.load()
 
 

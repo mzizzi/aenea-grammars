@@ -1,6 +1,5 @@
 import aenea.configuration
 
-
 def snakeword(text):
     formatted = text[0][0].upper()
     formatted += text[0][1:]

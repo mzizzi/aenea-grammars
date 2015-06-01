@@ -1,6 +1,6 @@
 {
     "name": "symbols",
-    "tags": ["multi", "global"],
+    "tags": ["multi", "idea", "global"],
     "shortcuts": {
         "box":               [{"type": "Text", "args": ["{}"]}, {"type": "Key", "args": ["left:1"]}],
         "circle":            [{"type": "Text", "args": ["()"]}, {"type": "Key", "args": ["left:1"]}],

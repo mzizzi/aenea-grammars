@@ -1,6 +1,6 @@
 {
     "name": "javascript",
-    "tags": ["multi"],
+    "tags": ["multi", "idea"],
     "vocabulary": {
         "and": " && ",
         "assign": " = ",

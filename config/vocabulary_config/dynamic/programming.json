@@ -1,6 +1,6 @@
 {
     "name": "programming",
-    "tags": ["multi", "global"],
+    "tags": ["multi", "idea", "global"],
     "vocabulary": {
         "assign":           " = ",
         "compare eek":      " == ",

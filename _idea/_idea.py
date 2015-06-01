@@ -32,6 +32,8 @@ from aenea import (
     Repetition,
     RuleRef,
     Sequence,
+    Dictation,
+    DictList,
 )
 from base.characters import LOWERCASE, UPPERCASE, SYMBOLS_TEXT, DIGITS
 
@@ -94,29 +96,37 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
     'snap [<n>]':       Key('c-w:%(n)d'),
     'select block':     Key('c-lbracket:10, cs-rbracket'),
 
-    'navi mend [<n>]':  Key('a-down:%(n)d'), # next method
-    'navi mart [<n>]':  Key('a-up:%(n)d'),   # previous method
-    'navi blart [<n>]': Key('c-lbracket:%(n)d'), # previous block
-    'navi blend [<n>]': Key('c-rbracket:%(n)d'), # next block
+    'method yope [<n>]': Key('a-down:%(n)d'), # next method
+    'method lope [<n>]': Key('a-up:%(n)d'),   # previous method
+    'block lope [<n>]':  Key('c-lbracket:%(n)d'), # previous block
+    'block yope [<n>]':  Key('c-rbracket:%(n)d'), # next block
 
-    'wiki [<m>]':       Key('c-g/10') + Text('%(m)d') + Key('enter'),
+    'line [<m>]':       Key('c-g/5') + Text('%(m)d') + Key('enter'),
+    'search':           Key('c-f/5'),
 }, config_key='editor')
 
 
 terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME, {
-    'navi flip':             Key('a-right'),
-    'navi flop':             Key('a-left'),
-    'navi flake':            Key('c-f4'),
-    'navi split':            Key('a-equal'),
-    'navi unsplit':          Key('a-hyphen'),
-    'navi hike':             Key('a-backslash'),
+    'win flip':             Key('a-right'),
+    'win flop':             Key('a-left'),
+    'win kill':             Key('c-f4'),
+    'win split':            Key('a-equal'),
+    'win unsplit':          Key('a-hyphen'),
+    'win hike':             Key('a-backslash'),
 
+    'search everything':     Key('shift:down,shift:up,shift:down,shift:up'),
+    'reformat code':         Key('a-r'),
     'refactor name':         Key('s-f6'),
     'go to error':           Key('f2'),
     'go to previous error':  Key('s-f2'),
 
     'auto comp':             Key('a-enter'),
+    'idea terminal':         Key('a-f12'),
     'idea rerun':            Key('c-f5'),
+    'idea run':              Key('a-4'),
+    'idea debug':            Key('a-5'),
+    'debug over':            Key('f8'),
+    'debug into':            Key('f7'),
 }, config_key='terminal')
 
 
@@ -146,14 +156,19 @@ class RepeatableRule(Repetition):
                 RuleRef(rule=base.rules.CharacterInsertionRule()),
                 RuleRef(rule=base.rules.IdentifierInsertionRule()),
                 RuleRef(rule=EditorRule()),
-                DictListRef('dynamic', register_dynamic_vocabulary(GRAMMAR_NAME)),
+                DictListRef('dynamic',
+                    register_dynamic_vocabulary(GRAMMAR_NAME)),
+                DictListRef(
+                    'static idea',
+                    DictList('static idea', get_static_vocabulary('idea')),
+                ),
             ]
         )
 
         super(RepeatableRule, self).__init__(
             repeatable_element,
             min=1,
-            max=12,
+            max=10,
             name='repeatable_rule'
         )
 
@@ -223,6 +238,15 @@ class TerminalRule(Alternative):
         )
 
 
+class LiteralRule(CompoundRule):
+    spec = 'literal <d>'
+    extras = [Dictation(name='d')]
+
+    def value(self, node):
+        words = node.words()
+        return Text(base.format.natword(words[1:]))
+
+
 class IdeaRule(CompoundRule):
     """
     Top level idea grammar rule
@@ -235,23 +259,31 @@ class IdeaRule(CompoundRule):
     <terminal_rule> is the set of rules that should aren't frequently used
     in series with other commands.  They may follow repeatable rules without
     pausing.
+
+    <literal_rule> inserts a raw dictation that would otherwise conflict with
+     an idea rule.
     """
-    spec = '[<repeatable_rule>] [parrot [<i>]] [<terminal_rule>]'
+    spec = '[<repeatable_rule>] [parrot [<i>]] [<terminal_rule>] ' \
+           '[<literal_rule>]'
     extras = [
         RepeatableRule(),
         IntegerRef('i', 1, 99),
-        TerminalRule()
+        TerminalRule(),
+        RuleRef(name='literal_rule', rule=LiteralRule()),
     ]
     defaults = {'i': 1}
 
     def _process_recognition(self, node, extras):
-        if 'repeatable_rule' in extras:
-            repeatable = extras['repeatable_rule']
+        repeatable = extras.get('repeatable_rule', None)
+        if repeatable is not None:
             utterance_multiplier = extras['i']
             (repeatable * utterance_multiplier).execute()
 
         if 'terminal_rule' in extras:
             extras['terminal_rule'].execute()
+
+        if 'literal_rule' in extras:
+            extras['literal_rule'].execute()
 
 
 context = aenea.wrappers.AeneaContext(
