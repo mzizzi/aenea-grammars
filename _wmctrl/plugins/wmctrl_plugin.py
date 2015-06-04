@@ -58,9 +58,11 @@ class WindowSelectApplication(object):
 
 class WmctrlPlugin(IPlugin):
     """
-    Plugin that launches a window that enumerates desktop windows.  A letter
+    Function that launches a window that enumerates desktop windows.  A letter
     is assigned to each open window.  Pressing a letter key will bring the
     corresponding window to the foreground.
+
+    Function that brings the windows vm running dragon to the foreground.
     """
     def register_rpcs(self, server):
         server.register_function(self.window_select)
@@ -75,7 +77,7 @@ class WmctrlPlugin(IPlugin):
     @staticmethod
     def show_dragon():
         windows = Window.list()
-        pattern = re.compile('^aenea-fresh \(multiadapter setup\) .*$')
+        pattern = re.compile('.*Oracle VM VirtualBox.*')
         windows = [w for w in windows if pattern.match(w.wm_name)]
         if len(windows) > 0:
             windows[0].activate()

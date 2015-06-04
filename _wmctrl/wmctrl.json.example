@@ -1,5 +1,6 @@
 {
     "commands": {
-        "window select": "window select"
+        "window select": "window select",
+        "show dragon": "show dragon"
     }
 }
