@@ -87,9 +87,9 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
     'whack [<n>]':      Key('cs-left:%(n)d, del'),
 
     'yank':             Key('c-c'),
-    'keep':             Key('c-x'),
+    'grab':             Key('c-x'),
     'plop [<n>]':       Key('c-v:%(n)d'),
-    'kink':            Key('c-z'),
+    'kink':             Key('c-z'),
 
     'selection mode':   Key('a-s'),
 
@@ -114,19 +114,21 @@ terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME,
     'win unsplit':          Key('a-hyphen'),
     'win hike':             Key('a-backslash'),
 
-    'search everything':     Key('shift:down,shift:up,shift:down,shift:up'),
-    'reformat code':         Key('a-r'),
-    'refactor name':         Key('s-f6'),
-    'go to error':           Key('f2'),
-    'go to previous error':  Key('s-f2'),
+    'search everything':    Key('shift:down,shift:up,shift:down,shift:up'),
+    'reformat code':        Key('a-r'),
+    'refactor name':        Key('s-f6'),
+    'problem next':         Key('f2'),
+    'problem previous':     Key('s-f2'),
+    'go to declaration':    Key('c-b'),
+    'show docs':            Key('c-q'),
 
-    'auto comp':             Key('a-enter'),
-    'idea terminal':         Key('a-f12'),
-    'idea rerun':            Key('c-f5'),
-    'idea run':              Key('a-4'),
-    'idea debug':            Key('a-5'),
-    'debug over':            Key('f8'),
-    'debug into':            Key('f7'),
+    'auto comp':            Key('a-enter'),
+    'idea terminal':        Key('a-f12'),
+    'idea rerun':           Key('c-f5'),
+    'idea run':             Key('a-4'),
+    'idea debug':           Key('a-5'),
+    'debug over':           Key('f8'),
+    'debug into':           Key('f7'),
 }, config_key='terminal')
 
 

@@ -1,8 +1,0 @@
-[Core]
-Name = Window Select Plugin
-Module = window_select
-
-[Documentation]
-Author = Matthew Zizzi
-Version = 0.1
-Description = Support for enumerating and switching between windows on an x11 host

@@ -10,12 +10,17 @@ import dragonfly
 
 
 def window_select():
-    aenea.communications.server.launch_app()
+    aenea.communications.server.window_select()
+
+
+def show_dragon():
+    aenea.communications.server.show_dragon()
 
 
 class WindowSelectCommand(MappingRule):
     mapping = aenea.configuration.make_grammar_commands('wmctrl', {
-        'window select': dragonfly.Function(window_select)
+        'window select': dragonfly.Function(window_select),
+        'show dragon': dragonfly.Function(show_dragon)
     }, 'commands')
 
 
@@ -29,4 +34,3 @@ def unload():
     if window_manager_control_grammar:
         window_manager_control_grammar.unload()
     window_manager_control_grammar = None
-

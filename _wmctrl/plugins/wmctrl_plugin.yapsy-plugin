@@ -1,0 +1,8 @@
+[Core]
+Name = wmcrtl plugin
+Module = wmctrl_plugin
+
+[Documentation]
+Author = Matthew Zizzi
+Version = 0.1
+Description = Support for listing and moving between windows on an x11 host

@@ -3,17 +3,14 @@ Plugin that allows the aenea server to spawn a new Tkinter app that enumerates
 the open windows for the desktop.  Each window is assigned a letter of the alphabet
 so that the user may bring any one of up to 52 open windows to the foreground.
 
-NOTE:   Requires that the system's NATIVE python interpreter can run this file
-        from outside of the aenea server.
-
 TODO:   Enable window switching by executable name to avoid the delay associated
         with dictating "window select" wait... "<window letter>" wait...
 """
 
 from Tkconstants import END
 from Tkinter import Tk, Listbox
-import os
-import subprocess
+import re
+import threading
 from wmctrl import Window
 from string import letters
 from yapsy.IPlugin import IPlugin
@@ -46,8 +43,9 @@ class WindowSelectListbox(Listbox):
             event.widget.master.destroy()
 
 
-class WindowSelectApplication():
+class WindowSelectApplication(object):
     def __init__(self):
+        super(WindowSelectApplication, self).__init__()
         self.tk = Tk()
         self.tk.wm_title('window-select')
         self.list_widget = WindowSelectListbox(self.tk, width=100)
@@ -58,15 +56,26 @@ class WindowSelectApplication():
         self.tk.mainloop()
 
 
-def launch_app():
-    subprocess.Popen(['/usr/bin/python', os.path.realpath(__file__)])
-
-
-class WindowSelectPlugin(IPlugin):
+class WmctrlPlugin(IPlugin):
+    """
+    Plugin that launches a window that enumerates desktop windows.  A letter
+    is assigned to each open window.  Pressing a letter key will bring the
+    corresponding window to the foreground.
+    """
     def register_rpcs(self, server):
-        server.register_function(launch_app)
+        server.register_function(self.window_select)
+        server.register_function(self.show_dragon)
 
+    @staticmethod
+    def window_select():
+        threading.Thread(
+            target=lambda: WindowSelectApplication().start()
+        ).start()
 
-if __name__ == '__main__':
-    app = WindowSelectApplication()
-    app.start()
+    @staticmethod
+    def show_dragon():
+        windows = Window.list()
+        pattern = re.compile('^aenea-fresh \(multiadapter setup\) .*$')
+        windows = [w for w in windows if pattern.match(w.wm_name)]
+        if len(windows) > 0:
+            windows[0].activate()

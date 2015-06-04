@@ -1,0 +1,11 @@
+{
+  "name": "git",
+  "tags": ["multi", "idea"],
+  "vocabulary": {
+    "git add all": "git add --all .",
+    "git commit": "git commit -m'",
+    "git status": "git status",
+    "git rebase": "git rebase",
+    "git log": "git log --pretty=oneline -10"
+  }
+}
