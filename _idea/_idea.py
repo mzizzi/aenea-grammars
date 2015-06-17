@@ -124,6 +124,7 @@ terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME,
 
     'auto comp':            Key('a-enter'),
     'idea terminal':        Key('a-f12'),
+    'idea project':         Key('a-f1'),
     'idea rerun':           Key('c-f5'),
     'idea run':             Key('a-4'),
     'idea debug':           Key('a-5'),

@@ -1,7 +1,9 @@
 """
 Plugin that allows the aenea server to spawn a new Tkinter app that enumerates
-the open windows for the desktop.  Each window is assigned a letter of the alphabet
-so that the user may bring any one of up to 52 open windows to the foreground.
+the open windows for the desktop.  Each window is assigned a letter of the
+alphabet so that the user may bring any one of up to 52 open windows to the
+foreground.  Also includes a plugin to bring the dragon vm window to the
+foreground.
 
 TODO:   Enable window switching by executable name to avoid the delay associated
         with dictating "window select" wait... "<window letter>" wait...
@@ -14,7 +16,7 @@ import threading
 from wmctrl import Window
 from string import letters
 from yapsy.IPlugin import IPlugin
-
+from subprocess import call
 
 enabled = True
 
@@ -32,15 +34,26 @@ class WindowSelectListbox(Listbox):
 
         for i in range(0, len(self.windows)):
             if not i > len(letters):
-                list_item = '%s - %s' % (letters[i], self.windows[i].wm_name)
-                self.insert(END, list_item)
+                window = self.windows[i]
+                letter = letters[i]
+                new_title = '%s - %s' % (letter, window.wm_name)
+                self.set_window_title(window, new_title)
+                self.insert(END, new_title)
 
-    @staticmethod
-    def key_handler(event):
+    def key_handler(self, event):
         index = letters.find(event.char)
         if index > -1:
             event.widget.windows[index].activate()
+            self.restore_window_titles()
             event.widget.master.destroy()
+
+    def set_window_title(self, window, title):
+        call(['wmctrl', '-i', '-r', window.id, '-T', title])
+
+    def restore_window_titles(self):
+        for i in range(0, len(self.windows)):
+            window = self.windows[i]
+            self.set_window_title(window, window.wm_name)
 
 
 class WindowSelectApplication(object):
@@ -77,7 +90,7 @@ class WmctrlPlugin(IPlugin):
     @staticmethod
     def show_dragon():
         windows = Window.list()
-        pattern = re.compile('.*Oracle VM VirtualBox.*')
+        pattern = re.compile('.* - Oracle VM VirtualBox.*')
         windows = [w for w in windows if pattern.match(w.wm_name)]
         if len(windows) > 0:
             windows[0].activate()

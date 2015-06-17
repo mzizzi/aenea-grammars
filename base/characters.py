@@ -106,7 +106,7 @@ SYMBOLS_TEXT = aenea.configuration.make_grammar_commands('base', {
     "eek": "=",
     "hat": "^",
     "hyph": "-",
-    "percent": "%",
+    "percent": "%%",
     "pound": "#",
     "laip": "(",
     "raip": ")",
