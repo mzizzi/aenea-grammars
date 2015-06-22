@@ -13,10 +13,12 @@ from Tkconstants import END
 from Tkinter import Tk, Listbox
 import re
 import threading
+from psutil import Process
 from wmctrl import Window
 from string import letters
 from yapsy.IPlugin import IPlugin
 from subprocess import call
+
 
 enabled = True
 
@@ -80,6 +82,12 @@ class WmctrlPlugin(IPlugin):
     def register_rpcs(self, server):
         server.register_function(self.window_select)
         server.register_function(self.show_dragon)
+        server.register_function(self.show_chrome)
+        server.register_function(self.show_intellij)
+        server.register_function(self.show_hipchat)
+        server.register_function(self.show_terminal)
+        server.register_function(self.get_window_executables)
+        server.register_function(self.set_focus)
 
     @staticmethod
     def window_select():
@@ -92,5 +100,63 @@ class WmctrlPlugin(IPlugin):
         windows = Window.list()
         pattern = re.compile('.* - Oracle VM VirtualBox.*')
         windows = [w for w in windows if pattern.match(w.wm_name)]
-        if len(windows) > 0:
-            windows[0].activate()
+        WmctrlPlugin.activate_window(windows)
+
+    @staticmethod
+    def show_chrome():
+        windows = Window.list()
+        wm_class = 'Chromium-browser.Chromium-browser'
+        windows = [w for w in windows if w.wm_class == wm_class]
+        WmctrlPlugin.activate_window(windows)
+
+    @staticmethod
+    def show_intellij():
+        windows = Window.list()
+        pattern = re.compile('.*jetbrains-idea$')
+        windows = [w for w in windows if pattern.match(w.wm_class)]
+        WmctrlPlugin.activate_window(windows)
+
+    @staticmethod
+    def show_hipchat():
+        windows = Window.list()
+        wm_class = 'hipchat.HipChat'
+        windows = [w for w in windows if w.wm_class == wm_class]
+        WmctrlPlugin.activate_window(windows)
+
+    @staticmethod
+    def show_terminal():
+        windows = Window.list()
+        wm_class = 'gnome-terminal.Gnome-terminal'
+        windows = [w for w in windows if w.wm_class == wm_class]
+        WmctrlPlugin.activate_window(windows)
+
+    @staticmethod
+    def activate_window(windows):
+        """
+        Choose which window should be activated
+        :param windows:
+        :return:
+        """
+        for window in windows:
+            if not window.id == Window.get_active().id:
+                window.activate()
+                break
+
+    @staticmethod
+    def get_window_executables():
+        windows = Window.list()
+
+        executables = {}
+        for window in windows:
+            if '.' in window.wm_class:
+                name = window.wm_class[window.wm_class.rfind('.') + 1:]\
+                    .replace('-', ' ').lower()
+            else:
+                name = window.wm_class
+            executables[name] = window.pid
+
+        return executables
+
+    @staticmethod
+    def set_focus(pid):
+        Window.by_id(pid).activate()

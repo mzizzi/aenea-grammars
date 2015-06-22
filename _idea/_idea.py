@@ -65,7 +65,7 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
     'yope [<n>]':       Key('c-right:%(n)d'),
 
     'care':             Key('home'),
-    'doll':             Key('end'),
+    'cart':             Key('end'),
 
     'file top':         Key('c-home'),
     'file toe':         Key('c-end'),
@@ -93,7 +93,7 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
 
     'selection mode':   Key('a-s'),
 
-    'snap [<n>]':       Key('c-w:%(n)d'),
+    'expan [<n>]':      Key('c-w:%(n)d'),
     'select block':     Key('c-lbracket:10, cs-rbracket'),
 
     'method yope [<n>]': Key('a-down:%(n)d'), # next method
