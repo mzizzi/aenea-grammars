@@ -91,10 +91,9 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
     'plop [<n>]':       Key('c-v:%(n)d'),
     'kink':             Key('c-z'),
 
-    'selection mode':   Key('a-s'),
+    'selmo':            Key('a-s'),
 
     'expan [<n>]':      Key('c-w:%(n)d'),
-    'select block':     Key('c-lbracket:10, cs-rbracket'),
 
     'method yope [<n>]': Key('a-down:%(n)d'), # next method
     'method lope [<n>]': Key('a-up:%(n)d'),   # previous method
@@ -121,6 +120,7 @@ terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME,
     'problem previous':     Key('s-f2'),
     'go to declaration':    Key('c-b'),
     'show docs':            Key('c-q'),
+    'toggle breakpoint':    Key('c-f8'),
 
     'auto comp':            Key('a-enter'),
     'idea terminal':        Key('a-f12'),

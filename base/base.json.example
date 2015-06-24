@@ -18,16 +18,16 @@
     "snakeword": "snakeword"
   },
   "characters.digits": {
-    "eight": "eight",
-    "five": "five",
-    "four": "four",
-    "niner": "niner",
-    "one": "one",
-    "seven": "seven",
-    "six": "six",
-    "three": "three",
-    "two": "two",
-    "zero": "zero"
+    "digit eight": "digit eight",
+    "digit five": "digit five",
+    "digit four": "digit four",
+    "digit niner": "digit niner",
+    "digit one": "digit one",
+    "digit seven": "digit seven",
+    "digit six": "digit six",
+    "digit three": "digit three",
+    "digit two": "digit two",
+    "digit zero": "digit zero"
   },
   "characters.symbols": {
     "amp": "amp",

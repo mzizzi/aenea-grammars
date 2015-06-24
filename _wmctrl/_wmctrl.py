@@ -11,7 +11,6 @@ from aenea import (
 )
 
 import dragonfly
-from time import time
 
 
 class WmctrlRule(MappingRule):
@@ -21,32 +20,13 @@ class WmctrlRule(MappingRule):
         'focus chrome': dragonfly.Function(lambda: server.show_chrome()),
         'focus intellij': dragonfly.Function(lambda: server.show_intellij()),
         'focus hipchat': dragonfly.Function(lambda: server.show_hipchat()),
-        'focus terminal': dragonfly.Function(lambda: server.show_terminal())
+        'focus terminal': dragonfly.Function(lambda: server.show_terminal()),
+        'focus G edit': dragonfly.Function(lambda: server.show_gedit())
     }, 'commands')
-
-
-executable_map = DictList('executable')
-
-
-class FocusRule(CompoundRule):
-    spec = 'focus <executable>'
-    extras = [DictListRef('executable', executable_map)]
-
-    def _process_begin(self):
-        t = time()
-        executable_map.clear()
-        executable_map.update(
-            aenea.communications.server.get_window_executables())
-        t = time() - t
-        print 'updated executable map %.3fs %s, ' % (t, executable_map.keys())
-
-    def _process_recognition(self, node, extras):
-        aenea.communications.server.set_focus(extras['executable'])
 
 
 window_manager_control_grammar = Grammar('wmctrl')
 window_manager_control_grammar.add_rule(WmctrlRule())
-# window_manager_control_grammar.add_rule(FocusRule())
 window_manager_control_grammar.load()
 
 
