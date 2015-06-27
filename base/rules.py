@@ -86,8 +86,15 @@ class IdentifierInsertionRule(CompoundRule):
             format_key = words.pop(0)
             words = base.format.lower(words)
 
+        # clean up dragon nastyness
         words = [word.split('\\', 1)[0].replace('-', '') for word in words]
 
-        formatted = FORMAT[format_key](words)
+        # handle words or phrases from dragon that contain spaces.  this makes
+        # them place nice with formatting functions.
+        split_words = []
+        for word in words:
+            split_words += word.split(' ')
+
+        formatted = FORMAT[format_key](split_words)
 
         return Text(formatted)

@@ -80,8 +80,8 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
 
     'line down [<n>]':  Key('as-down'),
     'lineup [<n>]':     Key('as-up'),
-    'squish [<n>]':     Key('c-j'),
-    'wipe [<n>]':       Key('c-y'),
+    'squish [<n>]':     Key('c-j:%(n)d'),
+    'wipe [<n>]':       Key('c-y:%(n)d'),
 
     'bump [<n>]':       Key('cs-right:%(n)d, del'),
     'whack [<n>]':      Key('cs-left:%(n)d, del'),
@@ -106,30 +106,31 @@ repeatable_command_table = aenea.configuration.make_grammar_commands('idea', {
 
 
 terminal_command_table = aenea.configuration.make_grammar_commands(GRAMMAR_NAME, {
-    'win flip':             Key('a-right'),
-    'win flop':             Key('a-left'),
-    'win kill':             Key('c-f4'),
-    'win split':            Key('a-equal'),
-    'win unsplit':          Key('a-hyphen'),
-    'win hike':             Key('a-backslash'),
+    'win flip [<c>]':           Key('a-right:%(c)d'),
+    'win flop [<c>]':           Key('a-left:%(c)d'),
+    'win kill':                 Key('c-f4'),
+    'win split':                Key('a-equal'),
+    'win unsplit':              Key('a-hyphen'),
+    'win hike':                 Key('a-backslash'),
 
-    'search everything':    Key('shift:down,shift:up,shift:down,shift:up'),
-    'reformat code':        Key('a-r'),
-    'refactor name':        Key('s-f6'),
-    'problem next':         Key('f2'),
-    'problem previous':     Key('s-f2'),
-    'go to declaration':    Key('c-b'),
-    'show docs':            Key('c-q'),
-    'toggle breakpoint':    Key('c-f8'),
+    'search everything':        Key('shift:down,shift:up,shift:down,shift:up'),
+    'reformat code':            Key('a-r'),
+    'refactor name':            Key('s-f6'),
+    'problem next [<c>]':       Key('f2:%(c)d'),
+    'problem previous [<c>]':   Key('s-f2:%(c)d'),
+    'go to declaration':        Key('c-b'),
+    'show docs':                Key('c-q'),
+    'toggle breakpoint':        Key('c-f8'),
 
-    'auto comp':            Key('a-enter'),
-    'idea terminal':        Key('a-f12'),
-    'idea project':         Key('a-f1'),
-    'idea rerun':           Key('c-f5'),
-    'idea run':             Key('a-4'),
-    'idea debug':           Key('a-5'),
-    'debug over':           Key('f8'),
-    'debug into':           Key('f7'),
+    'auto comp':                Key('a-enter'),
+    'idea terminal [<c>]':      Key('a-f12:%(c)d'),
+    'idea project [<c>]':       Key('a-1:%(c)d'),
+    'idea rerun':               Key('c-f5'),
+    'idea run':                 Key('a-4'),
+    'idea debug [<c>]':         Key('a-5:%(c)d'),
+    'debug over':               Key('f8'),
+    'debug into':               Key('f7'),
+    'debug resume':             Key('f9')
 }, config_key='terminal')
 
 
@@ -145,13 +146,50 @@ class EditorRule(MappingRule):
     defaults = {'n': 1, 'm': 1}
 
 
+class VimJumpRule(MappingRule):
+    """
+    Use the IdeaVIM plugin to enable VIM's "f" and "F" commands to quickly jump
+    to the next/previous occurrence of a character on the current line.
+
+    e.g. "tile alpha"
+        The quick brown fox jumps over the lazy dog.
+        ^ --------------------------------> ^
+
+    e.g. "tilo juliet"
+        The quick brown fox jumps over the lazy dog.
+                            ^ <---------------- ^
+    """
+    def __init__(self):
+        chars = LOWERCASE.copy()
+        chars.update(UPPERCASE)
+        chars.update(SYMBOLS_TEXT)
+        chars.update(DIGITS)
+
+        # enable/disable IdeaVim plugin hotkey
+        toggle_vim = Key('as-v')
+
+        mapping = {
+            'tilo <char>': toggle_vim + Text('F%(char)s') + toggle_vim,
+            'tile <char>': toggle_vim + Text('f%(char)s') + toggle_vim,
+        }
+
+        extras = [
+            RuleRef(rule=MappingRule(mapping=chars, name='vim_char_mapping'),
+                    name='char'),
+        ]
+
+        super(VimJumpRule, self).__init__(
+            mapping=mapping, extras=extras, defaults={'char': ''})
+
+
 class RepeatableRule(Repetition):
     def __init__(self):
         """
         A combination of all repeatable elements in the idea grammar. This
         includes both text insertion actions, text manipulation, and
         navigation actions.  This is the workhorse rule of the idea grammar.
-        Allows for these elements to be spoken continuously.
+        Allows for these elements to be spoken continuously. (up to 10 at a
+        time)
         """
         repeatable_element = Alternative(
             name='repeatable_element',
@@ -165,6 +203,7 @@ class RepeatableRule(Repetition):
                     'static idea',
                     DictList('static idea', get_static_vocabulary('idea')),
                 ),
+                RuleRef(rule=VimJumpRule())
             ]
         )
 
@@ -191,7 +230,7 @@ class EmacsIdeasAceJumpRule(MappingRule):
     are implemented.
 
     "scar alpha" (highlights all 'a' characters for jumping)
-    "sword alpha" (highlights all words beginning with 'a' for jumping)
+    "sword alpha" (highlightts all words beginning with 'a' for jumping)
     """
     def __init__(self):
         chars = LOWERCASE.copy()
@@ -201,8 +240,7 @@ class EmacsIdeasAceJumpRule(MappingRule):
 
         single_character_element = RuleRef(
             rule=MappingRule(mapping=chars, name='emacs_ideas_mapping'),
-            name='char'
-        )
+            name='char')
 
         mapping = {
             'scar <char>':  Key('a-p') + Text('%(char)s'),
@@ -212,8 +250,7 @@ class EmacsIdeasAceJumpRule(MappingRule):
         super(EmacsIdeasAceJumpRule, self).__init__(
             mapping=mapping,
             extras=[single_character_element],
-            defaults={'char': ''}
-        )
+            defaults={'char': ''})
 
 
 class TerminalRule(Alternative):
@@ -223,22 +260,18 @@ class TerminalRule(Alternative):
     """
 
     def __init__(self):
-        terminal_command_element = RuleRef(
+        terminal_command_ref = RuleRef(
             rule=MappingRule(
                 mapping=terminal_command_table,
-                name='terminal_command_element'
-            )
-        )
+                name='terminal_command_element',
+                extras=[IntegerRef('c', 1, 99)],
+                defaults={'c': 1}))
 
-        emacs_ideas_element = RuleRef(rule=EmacsIdeasAceJumpRule())
+        emacs_ideas_ref = RuleRef(rule=EmacsIdeasAceJumpRule())
 
         super(TerminalRule, self).__init__(
-            children=[
-                terminal_command_element,
-                emacs_ideas_element
-            ],
-            name='terminal_rule'
-        )
+            children=[terminal_command_ref, emacs_ideas_ref],
+            name='terminal_rule')
 
 
 class LiteralRule(CompoundRule):
