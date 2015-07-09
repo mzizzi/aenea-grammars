@@ -34,25 +34,26 @@ class ChromiumRule(MappingRule):
         'frame right [<n>]':                 Key('c-tab:%(n)d'),
         'history':                           Key('c-h'),
         'reload':                            Key('c-r'),
-        'next [<n>]':                        Key('c-g:%(n)d'),
-        'previous [<n>]':                    Key('cs-g:%(n)d'),
         'back [<n>]':                        Key('a-left:%(n)d'),
         'forward [<n>]':                     Key('a-right:%(n)d'),
+        'search [<text>]':                   Key('c-f') + Text('%(text)s'),
+        'search next [<n>]':                 Key('c-f') + Key('enter:%(n)d)'),
+        'search previous [<n>]':             Key('c-f') + Key('s-enter:%(n)d)'),
         })
-    extras = [IntegerRef('n', 1, 10), Dictation('text')]
-    defaults = {'n': 1}
+
+    extras = [
+        IntegerRef('n', 1, 10), Dictation('text'),
+        Dictation('text'),
+    ]
+
+    defaults = {'n': 1, 'text': ''}
 
 
 class VimiumRule(MappingRule):
     mapping = aenea.configuration.make_grammar_commands('vimium', {
-        'links': Key('f'),
-        'search': Key('slash'),
-        'search next': Key('n'),
-        'search previous': Key('N'),
+        'show links': Key('escape, escape, f'),
         'bookmarks': Key('o'),
     })
-    extras = [Dictation('text')]
-    defaults = {'text': ''}
 
 
 chromium_grammar.add_rule(ChromiumRule())

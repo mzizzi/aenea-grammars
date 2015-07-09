@@ -125,14 +125,14 @@ SYMBOLS_TEXT = aenea.configuration.make_grammar_commands('base', {
 }, 'characters.symbols')
 
 DIGITS = aenea.configuration.make_grammar_commands('base', {
-    'digit zero': '0',
-    'digit one': '1',
-    'digit two': '2',
-    'digit three': '3',
-    'digit four': '4',
-    'digit five': '5',
-    'digit six': '6',
-    'digit seven': '7',
-    'digit eight': '8',
-    'digit niner': '9'
+    'zero': '0',
+    'one': '1',
+    'two': '2',
+    'three': '3',
+    'four': '4',
+    'five': '5',
+    'six': '6',
+    'seven': '7',
+    'eight': '8',
+    'nine': '9'
 }, 'characters.digits')

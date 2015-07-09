@@ -22,6 +22,7 @@ letters = base.characters.UPPERCASE.copy()
 letters.update(base.characters.LOWERCASE.copy())
 
 digits = base.characters.DIGITS.copy()
+digits = {'digit %s' % k: v for k, v in digits.items()}
 
 alpha_num = {}
 alpha_num.update(letters)
@@ -35,23 +36,23 @@ all_chars.update(base.characters.SYMBOLS_TEXT)
 
 
 class AlphaInsertionRule(MappingRule):
-    mapping = dict([(name, Text(letters[name])) for name in letters])
+    mapping = {k: Text(v) for k, v in letters.items()}
 
 
 class DigitInsertionRule(MappingRule):
-    mapping = dict([("dig " + name, Text(digits[name])) for name in digits])
+    mapping = {k: Text(v) for k, v in digits.items()}
 
 
 class AlphaNumInsertionRule(MappingRule):
-    mapping = dict([(name, Text(alpha_num[name])) for name in alpha_num])
+    mapping = {k: Text(v) for k, v in alpha_num.items()}
 
 
 class SymbolInsertionRule(MappingRule):
-    mapping = dict([(name, Text(symbol_chars[name])) for name in symbol_chars])
+    mapping = {k: Text(v) for k, v in symbol_chars.items()}
 
 
 class CharacterInsertionRule(MappingRule):
-    mapping = dict([(name, Text(all_chars[name])) for name in all_chars])
+    mapping = {k: Text(v) for k, v in all_chars.items()}
 
 
 class IdentifierInsertionRule(CompoundRule):

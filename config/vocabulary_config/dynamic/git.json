@@ -6,6 +6,10 @@
     "git commit": "git commit -m'",
     "git status": "git status",
     "git rebase": "git rebase",
-    "git log": "git log --pretty=oneline -10"
+    "git log": "git log --pretty=oneline -10",
+    "git push": "git push",
+    "git branch": "git branch ",
+    "git checkout": "git checkout ",
+    "git checkout branch": "git checkout -b "
   }
 }
